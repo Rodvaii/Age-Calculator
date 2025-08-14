@@ -3,46 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Age Calculator</title>
+    <title>Advanced Age Calculator</title>
     <style>
+        /* ===== VFX Background Animation ===== */
         body {
+            margin: 0;
             font-family: Arial, sans-serif;
-            background: #f0f2f5;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            color: white;
+            overflow: hidden;
         }
+        .bg {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #1e3c72, #2a5298);
+            z-index: -1;
+            animation: gradientMove 10s infinite alternate;
+        }
+        @keyframes gradientMove {
+            0% { background: radial-gradient(circle at top left, #1e3c72, #2a5298); }
+            50% { background: radial-gradient(circle at bottom right, #000428, #004e92); }
+            100% { background: radial-gradient(circle at top right, #1e3c72, #2a5298); }
+        }
+        /* Floating Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        .particles span {
+            position: absolute;
+            display: block;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            animation: floatUp linear infinite;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-100vh); opacity: 0; }
+        }
+
+        /* ===== Calculator Box ===== */
         .container {
-            background: white;
+            background: rgba(0, 0, 0, 0.6);
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+            border-radius: 15px;
             text-align: center;
-            width: 300px;
+            width: 320px;
+            box-shadow: 0 0 20px rgba(255,255,255,0.3);
         }
         h2 {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         input {
-            width: 100%;
+            width: 30%;
             padding: 8px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
+            margin: 5px;
+            border: none;
             border-radius: 5px;
+            text-align: center;
+            font-size: 16px;
         }
         button {
             width: 100%;
             padding: 10px;
-            background: #007bff;
+            background: #ff9800;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
+            margin-top: 10px;
         }
         button:hover {
-            background: #0056b3;
+            background: #e68900;
         }
         .result {
             margin-top: 15px;
@@ -51,28 +92,50 @@
     </style>
 </head>
 <body>
+
+    <div class="bg"></div>
+    <div class="particles" id="particles"></div>
+
     <div class="container">
-        <h2>Age Calculator</h2>
-        <label for="dob">Enter Date of Birth:</label>
-        <input type="date" id="dob">
+        <h2>Advanced Age Calculator</h2>
+        <label>Enter Date:</label><br>
+        <input type="number" id="day" placeholder="DD" min="1" max="31">
+        <input type="number" id="month" placeholder="MM" min="1" max="12">
+        <input type="number" id="year" placeholder="YYYY" min="1900">
         <button onclick="calculateAge()">Calculate Age</button>
         <div class="result" id="result"></div>
     </div>
 
     <script>
+        // Floating particles generator
+        const particlesContainer = document.getElementById("particles");
+        for (let i = 0; i < 20; i++) {
+            let particle = document.createElement("span");
+            let size = Math.random() * 5 + 2;
+            particle.style.width = size + "px";
+            particle.style.height = size + "px";
+            particle.style.left = Math.random() * 100 + "%";
+            particle.style.top = Math.random() * 100 + "%";
+            particle.style.animationDuration = Math.random() * 10 + 5 + "s";
+            particlesContainer.appendChild(particle);
+        }
+
         function calculateAge() {
-            let dob = document.getElementById("dob").value;
-            if (!dob) {
-                document.getElementById("result").innerHTML = "Please select your date of birth.";
+            let day = parseInt(document.getElementById("day").value);
+            let month = parseInt(document.getElementById("month").value);
+            let year = parseInt(document.getElementById("year").value);
+
+            if (!day || !month || !year || day > 31 || month > 12 || year > new Date().getFullYear()) {
+                document.getElementById("result").innerHTML = "⚠ Please enter a valid date.";
                 return;
             }
 
-            let dobDate = new Date(dob);
             let today = new Date();
+            let dob = new Date(year, month - 1, day);
 
-            let years = today.getFullYear() - dobDate.getFullYear();
-            let months = today.getMonth() - dobDate.getMonth();
-            let days = today.getDate() - dobDate.getDate();
+            let years = today.getFullYear() - dob.getFullYear();
+            let months = today.getMonth() - dob.getMonth();
+            let days = today.getDate() - dob.getDate();
 
             if (days < 0) {
                 months--;
@@ -84,8 +147,9 @@
             }
 
             document.getElementById("result").innerHTML = 
-                `You are ${years} years, ${months} months, and ${days} days old.`;
+                `🎉 You are ${years} years, ${months} months, and ${days} days old.`;
         }
     </script>
+
 </body>
 </html>

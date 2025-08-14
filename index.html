@@ -29,6 +29,7 @@
             50% { background: radial-gradient(circle at bottom right, #000428, #004e92); }
             100% { background: radial-gradient(circle at top right, #1e3c72, #2a5298); }
         }
+
         /* Floating Particles */
         .particles {
             position: fixed;
@@ -81,13 +82,40 @@
             cursor: pointer;
             font-size: 16px;
             margin-top: 10px;
+            transition: all 0.3s ease;
         }
         button:hover {
             background: #e68900;
         }
+        /* Birthday Animation */
+        .celebrate {
+            animation: bounce 0.5s ease, glow 1s ease;
+            background: #ff4081 !important;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 10px #ff4081; }
+            50% { box-shadow: 0 0 30px #ff80ab; }
+        }
         .result {
             margin-top: 15px;
             font-weight: bold;
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: red;
+            animation: fall 1s linear forwards;
+        }
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(200px) rotate(360deg); opacity: 0; }
         }
     </style>
 </head>
@@ -102,7 +130,7 @@
         <input type="number" id="day" placeholder="DD" min="1" max="31">
         <input type="number" id="month" placeholder="MM" min="1" max="12">
         <input type="number" id="year" placeholder="YYYY" min="1900">
-        <button onclick="calculateAge()">Calculate Age</button>
+        <button id="calcBtn" onclick="calculateAge()">Calculate Age</button>
         <div class="result" id="result"></div>
     </div>
 
@@ -124,6 +152,7 @@
             let day = parseInt(document.getElementById("day").value);
             let month = parseInt(document.getElementById("month").value);
             let year = parseInt(document.getElementById("year").value);
+            let btn = document.getElementById("calcBtn");
 
             if (!day || !month || !year || day > 31 || month > 12 || year > new Date().getFullYear()) {
                 document.getElementById("result").innerHTML = "⚠ Please enter a valid date.";
@@ -148,10 +177,24 @@
 
             document.getElementById("result").innerHTML = 
                 `🎉 You are ${years} years, ${months} months, and ${days} days old.`;
+
+            // Animate button
+            btn.classList.add("celebrate");
+            setTimeout(() => btn.classList.remove("celebrate"), 1000);
+
+            // Confetti effect
+            for (let i = 0; i < 30; i++) {
+                let conf = document.createElement("div");
+                conf.className = "confetti";
+                conf.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                conf.style.left = (btn.offsetLeft + btn.offsetWidth / 2) + Math.random() * 100 - 50 + "px";
+                conf.style.top = (btn.offsetTop + btn.offsetHeight / 2) + "px";
+                conf.style.animationDuration = (Math.random() * 1 + 0.5) + "s";
+                document.body.appendChild(conf);
+                setTimeout(() => conf.remove(), 1500);
+            }
         }
     </script>
 
 </body>
 </html>
-
-
